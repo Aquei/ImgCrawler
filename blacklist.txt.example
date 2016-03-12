@@ -1,0 +1,3 @@
+#black list words in url
+#このファイルを編集する代わりに、新しくblacklist.txtを作成すること, ファイルはUTF-8でエンコードすること
+thumbs.redditmedia.com

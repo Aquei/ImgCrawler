@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>ImgCrawler Config</title>
+
+    <!-- Bootstrap -->
+	<link href="https://cdn.jsdelivr.net/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body ng-app="getImgur">
+	  <!-- <h1>Hello, world!</h1> -->
+
+
+	  <div class="container" ng-controller="feedsController">
+		  <div class="well well-lg">
+			  path : <input ng-value="config.config.path" ng-model="config.config.path"><br>
+			  min-width : <input ng-value="config.config.min_width" ng-model="config.config.min_width"><br>
+			  min-height : <input ng-value="config.config.min_height" ng-model="config.config.min_height"><br>
+
+		  </div>
+
+		  <div ng-controller="addNewFeed">
+			  name : <input require ng-model="newFeed.name"><br>
+			  url : <input require ng-model="newFeed.url"><br>
+
+			  <button class="btn btn-lg btn-primary" ng-click="addNew()">add</button>
+			  <a class="btn btn-lg btn-danger" ng-click="save()" ng-href="{{blob_uri}}" download="config.json">save</a>
+			  
+		  </div>
+		  <div class="well" ng-repeat="feed in feeds">
+			  name : <input ng-value="feed.name" ng-model="feed.name"><br>url : <input ng-value="feed.url" ng-model="feed.url"><br>
+			  <button class="btn btn-danger" ng-click="delFeed($index)">削除</button>
+		  </div>
+
+	  </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+	<!-- <script src="js/bootstrap.min.js"></script> -->
+	<script src="https://cdn.jsdelivr.net/angularjs/1.2.26/angular.min.js"></script>
+
+	<script>
+		var app = angular.module('getImgur', [], function($compileProvider){
+			$compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|blob):/);
+		});
+		app.factory('configLoader', ['$http', '$log', function($http, $log){
+			return $http.get("./config.json");
+		}]);
+
+		app.controller('feedsController', ['configLoader', '$scope', '$log', function(configLoader, $scope, $log){
+			configLoader
+				.success(function(data){
+					$scope.config = data;
+					if(!angular.isDefined($scope.config.feeds)){
+						$scope.config.feeds = [];
+					}
+					$scope.feeds = $scope.config.feeds;
+					console.log("load config successfully");
+				})
+				.error(function(data){
+					$scope.config = {
+						feeds : []
+					};
+					$scope.feeds = $scope.config.feeds;
+				});
+
+	
+			$scope.delFeed = function(index){
+				$scope.feeds.splice(index,1);
+			}
+		}]);
+
+		app.controller('addNewFeed', ['$scope', function($scope){
+			$scope.newFeed = {};
+			$scope.addNew = function(){
+				var flag = false;
+				angular.forEach($scope.feeds, function(val, key){
+					if(val.url == $scope.newFeed.url || !$scope.newFeed.url){
+						flag = true;
+					}
+				});
+
+				if(flag){
+					return;
+				}
+
+				$scope.feeds.unshift($scope.newFeed);
+				$scope.newFeed = {};
+			};
+			$scope.save = function(){
+				var blob = new Blob([angular.toJson($scope.config)],{type:"application/json",filename:"config.json"});
+				$scope.blob_uri = window.URL.createObjectURL(blob);
+
+			};
+		}]);
+
+
+
+	</script>
+  </body>
+</html>

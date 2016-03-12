@@ -1,3 +1,17 @@
+# vim
+*~
+*.swp
+*.swo
+
+#config
+config.json
+
+#user config
+blacklist.txt
+ext.txt
+
+ 
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
