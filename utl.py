@@ -152,7 +152,7 @@ def file_get(url, params={}, headers={}):
         #問題なし
         end = time.time()
         msg = []
-        msg.append(req.headers.get('content-type'))
+        msg.append(req.headers.get('content-type') or 'Unknown Content Type')
         msg.append(bytes_size_str(req.content))
         msg.append(quantize(end - start, 2) + '秒')
 
