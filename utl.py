@@ -177,7 +177,7 @@ def bytes_size_str(bytes_):
         q = 1024**(i+1)
         q2 = 1024**(i+2)
 
-        if size >= q and q2 < size:
+        if size >= q and q2 > size:
             return quantize(size / q, 2) + (s + 'b').upper()
 
     return str(size) + 'B'

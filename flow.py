@@ -143,7 +143,7 @@ def file_checker(url, min_width=0, min_height=0):
     else:
 
         #zipファイルの場合
-        content_type = req.headers.get('content-type').lower()
+        content_type = str(req.headers.get('content-type')).lower()
         if content_type in mime_zip:
             #zip_entriesはzip内エントリーのbytesが入ったリスト or None
             zip_entries = extract_image_zip(io.BytesIO(req.content))
